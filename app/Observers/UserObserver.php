@@ -2,9 +2,10 @@
 
 namespace App\Observers;
 
+use App\Models\Role;
 use App\Models\User;
 
-class UserOvserver
+class UserObserver
 {
     /**
      * Handle the User "created" event.
@@ -12,6 +13,10 @@ class UserOvserver
     public function created(User $user): void
     {
         //
+        $role = Role::where("name", "student")->first();
+        if ($role) {
+            $user->role_id = $role->id;
+        }
     }
 
     /**
