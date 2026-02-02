@@ -7,16 +7,19 @@ use App\Models\User;
 
 class UserObserver
 {
+    public function creating(User $user)
+    {
+        $role = Role::where("name", "student")->first();
+        if ($role) {
+            $user->role_id = $role->id;
+        }
+    }
     /**
      * Handle the User "created" event.
      */
     public function created(User $user): void
     {
         //
-        $role = Role::where("name", "student")->first();
-        if ($role) {
-            $user->role_id = $role->id;
-        }
     }
 
     /**
