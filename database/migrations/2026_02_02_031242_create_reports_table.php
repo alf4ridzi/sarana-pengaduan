@@ -17,7 +17,9 @@ return new class extends Migration {
             $table->foreignIdFor(User::class, "user_id")->constrained();
             $table->foreignIdFor(Category::class, "category_id")->constrained();
             $table->string("location", 50);
-            $table->string("information");
+            $table->string("description");
+            $table->string("photo")->nullable();
+            $table->enum("status", ["open", "process", "closed"])->default("open");
             $table->timestamps();
         });
     }

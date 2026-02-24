@@ -14,9 +14,6 @@ return new class extends Migration {
         Schema::create("report_responses", function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Report::class, "report_id")->constrained();
-            $table
-                ->enum("status", ["done", "waiting", "proccess"])
-                ->default("waiting");
             $table->text("feedback");
             $table->timestamps();
         });

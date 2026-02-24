@@ -1,4 +1,4 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -137,7 +137,6 @@ const STATUS_CONFIG = {
     },
 };
 
-const CATEGORIES = ["Semua Kategori", "Fasilitas", "Infrastruktur", "Akademik"];
 const STATUSES = ["Semua Status", "open", "process", "closed"];
 
 function StatusBadge({ status }) {
@@ -233,9 +232,11 @@ function DetailDialog({ item }) {
 }
 
 export default function Index() {
+    const { categories } = usePage().props;
+
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("Semua Status");
-    const [categoryFilter, setCategoryFilter] = useState("Semua Kategori");
+    const [categoryFilter, setCategoryFilter] = useState("Semua");
 
     const filtered = useMemo(() => {
         return aspirasi.filter((item) => {
@@ -246,7 +247,7 @@ export default function Index() {
             const matchStatus =
                 statusFilter === "Semua Status" || item.status === statusFilter;
             const matchCategory =
-                categoryFilter === "Semua Kategori" ||
+                categoryFilter === "Semua" ||
                 item.category === categoryFilter;
             return matchSearch && matchStatus && matchCategory;
         });
@@ -429,14 +430,23 @@ export default function Index() {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl">
-                                    {CATEGORIES.map((c) => (
-                                        <SelectItem
-                                            key={c}
-                                            value={c}
+                                    <SelectItem
+                                            key="semua"
+                                            value="Semua"
                                             className="text-sm flex items-center gap-1 bg-white"
                                         >
                                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
-                                                {c}
+                                                Semua
+                                            </span>
+                                        </SelectItem>
+                                    {categories.map((c) => (
+                                        <SelectItem
+                                            key={c.code}
+                                            value={c.name}
+                                            className="text-sm flex items-center gap-1 bg-white"
+                                        >
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                                {c.name}
                                             </span>
                                         </SelectItem>
                                     ))}
@@ -444,10 +454,9 @@ export default function Index() {
                             </Select>
                         </div>
 
-                        {/* Active filters */}
                         {(search ||
                             statusFilter !== "Semua Status" ||
-                            categoryFilter !== "Semua Kategori") && (
+                            categoryFilter !== "Semua") && (
                             <div className="flex items-center gap-2 mt-3 flex-wrap">
                                 <span className="text-xs text-slate-400">
                                     {filtered.length} hasil ditemukan
@@ -456,7 +465,7 @@ export default function Index() {
                                     onClick={() => {
                                         setSearch("");
                                         setStatusFilter("Semua Status");
-                                        setCategoryFilter("Semua Kategori");
+                                        setCategoryFilter("Semua");
                                     }}
                                     className="text-xs text-indigo-500 hover:text-indigo-700 underline underline-offset-2 transition-colors"
                                 >

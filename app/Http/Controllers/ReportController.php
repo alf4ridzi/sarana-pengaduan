@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
+use App\Models\Report;
+use Auth;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
-class IndexController extends Controller
+class ReportController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,14 +14,6 @@ class IndexController extends Controller
     public function index()
     {
         //
-
-        $categories = Category::all();
-
-        $data = [
-            'categories' => $categories,
-        ];
-
-        return Inertia::render("Sarana/Index", $data);
     }
 
     /**
@@ -38,6 +30,25 @@ class IndexController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'category_id' => ['required', 'integer'],
+            'location' => ['required', 'string'],
+            'description' => ['required', 'string'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,png,jpeg,webp'],
+        ]);
+
+        if ($request->photo) {
+
+        }
+        
+        $data = [
+            'user_id' => Auth::id(),
+            'category_id' => $request->category_id,
+            'location' => $request->location,
+            'description' => $request->description,
+        ];
+
+
     }
 
     /**

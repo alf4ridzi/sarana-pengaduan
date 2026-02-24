@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,7 +14,14 @@ class DashboardController extends Controller
     public function index()
     {
         //
-        return Inertia::render("Sarana/Dashboard");
+
+        $categories = Category::all();
+
+        $data = [
+            'categories' => $categories,
+        ];
+
+        return Inertia::render("Sarana/Dashboard", $data);
     }
 
     /**

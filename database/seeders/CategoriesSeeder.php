@@ -14,18 +14,26 @@ class CategoriesSeeder extends Seeder
     public function run(): void
     {
         //
-        DB::table("categories")->insert([
+        DB::table("categories")->insertOrIgnore([
             [
-                'name' => 'Gedung'
+                'name' => 'Lainnya',
+                'code' => 'lainnya'
             ],
             [
-                'name' => 'Peralatan'
+                'name' => 'Gedung',
+                'code' => 'gedung'
             ],
             [
-                'name' => 'Toilet'
+                'name' => 'Peralatan',
+                'code' => 'peralatan'
             ],
             [
-                'name' => ''
+                'name' => 'Toilet',
+                'code' => 'toilet'
+            ],
+            [
+                'name' => 'Akademik',
+                'code' => 'akademik'
             ]
         ]);
     }

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Form, Head, Link, useForm, usePage } from "@inertiajs/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,7 @@ import {
     faSearch,
     faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import Dropdown from "@/Components/Dropdown";
 
 // keep categories for filtering and display
 const STATUS_CONFIG = {
@@ -57,7 +58,7 @@ const STATUS_CONFIG = {
     },
 };
 
-const CATEGORIES = ["Semua Kategori", "Fasilitas", "Infrastruktur", "Akademik"];
+// const CATEGORIES = ["Semua", "Fasilitas", "Infrastruktur", "Akademik"];
 const STATUSES = ["Semua Status", "open", "process", "closed"];
 
 function StatusBadge({ status }) {
@@ -92,7 +93,7 @@ function DetailDialog({ item, role }) {
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 h-8 w-8 p-0 rounded-lg transition-all"
+                    className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 h-8 w-8 p-0 rounded-lg transition-all bg-white"
                 >
                     <FontAwesomeIcon
                         icon={faChevronRight}
@@ -100,7 +101,7 @@ function DetailDialog({ item, role }) {
                     />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg rounded-2xl">
+            <DialogContent className="max-w-lg rounded-2xl bg-white">
                 <DialogHeader>
                     <DialogTitle className="text-lg font-bold text-slate-800 leading-snug pr-4">
                         {item.title}
@@ -161,7 +162,7 @@ function DetailDialog({ item, role }) {
                     )}
 
                     {role === "admin" && (
-                        <form onSubmit={submitReply} className="space-y-4">
+                        <form onSubmit={submitReply} className="space-y-4 ">
                             <Textarea
                                 placeholder="Balas aspirasi..."
                                 value={replyForm.data.message}
@@ -178,7 +179,7 @@ function DetailDialog({ item, role }) {
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Ubah status" />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="bg-white">
                                     <SelectItem value="open">Open</SelectItem>
                                     <SelectItem value="process">
                                         Process
@@ -255,14 +256,15 @@ const aspirasi = [
     },
 ];
 
-export default function Dashboard({ auth }) {
+export default function Dashboard() {
+    const { auth, categories } = usePage().props;
     const role = auth.user.roles[0]?.name || "student";
     const [open, setOpen] = useState(false);
 
     // filters and search
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("Semua Status");
-    const [categoryFilter, setCategoryFilter] = useState("Semua Kategori");
+    const [categoryFilter, setCategoryFilter] = useState("Semua");
 
     const userItems = useMemo(() => {
         const base =
@@ -281,8 +283,7 @@ export default function Dashboard({ auth }) {
             const matchStatus =
                 statusFilter === "Semua Status" || item.status === statusFilter;
             const matchCategory =
-                categoryFilter === "Semua Kategori" ||
-                item.category === categoryFilter;
+                categoryFilter === "Semua" || item.category === categoryFilter;
             return matchSearch && matchStatus && matchCategory;
         });
     }, [search, statusFilter, categoryFilter, userItems]);
@@ -291,11 +292,14 @@ export default function Dashboard({ auth }) {
     const createForm = useForm({
         title: "",
         description: "",
+        location: "",
+        category_id: "",
+        photo: null,
     });
 
     const submitAspirasi = (e) => {
         e.preventDefault();
-        createForm.post(route("aspirasi.store"), {
+        createForm.post(route("reports.store"), {
             onSuccess: () => {
                 setOpen(false);
                 createForm.reset();
@@ -339,50 +343,112 @@ export default function Dashboard({ auth }) {
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
                     {role === "student" && (
-                        <Dialog open={open} onOpenChange={setOpen}>
-                            <DialogTrigger asChild>
-                                <Button className="mb-6">
-                                    <FontAwesomeIcon
-                                        icon={faPlus}
-                                        className="mr-2"
-                                    />
-                                    Buat Aspirasi
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="rounded-2xl bg-white">
-                                <DialogHeader>
-                                    <DialogTitle>Buat Aspirasi</DialogTitle>
-                                </DialogHeader>
-                                <form
-                                    onSubmit={submitAspirasi}
-                                    className="space-y-4"
-                                >
-                                    <Input
-                                        placeholder="Judul"
-                                        value={createForm.data.title}
-                                        onChange={(e) =>
-                                            createForm.setData(
-                                                "title",
-                                                e.target.value,
-                                            )
-                                        }
-                                    />
-                                    <Textarea
-                                        placeholder="Deskripsi"
-                                        value={createForm.data.description}
-                                        onChange={(e) =>
-                                            createForm.setData(
-                                                "description",
-                                                e.target.value,
-                                            )
-                                        }
-                                    />
-                                    <Button type="submit" className="w-full">
-                                        Kirim
-                                    </Button>
-                                </form>
-                            </DialogContent>
-                        </Dialog>
+                        <>
+                            <Button
+                                onClick={() => setOpen(true)}
+                                className="mb-6 rounded-xl px-5 shadow-sm hover:shadow-md transition-all"
+                            >
+                                <FontAwesomeIcon
+                                    icon={faPlus}
+                                    className="mr-2"
+                                />
+                                Buat Aspirasi
+                            </Button>
+
+                            <Dialog open={open} onOpenChange={setOpen}>
+                                <DialogContent className="rounded-2xl bg-white">
+                                    <DialogHeader>
+                                        <DialogTitle className="text-xl">
+                                            Buat Aspirasi
+                                        </DialogTitle>
+                                    </DialogHeader>
+
+                                    <div
+                                        className="space-y-4"
+                                    >
+                                        <Input
+                                            placeholder="Judul Aspirasi"
+                                            className="rounded-xl"
+                                            value={createForm.data.title}
+                                            onChange={(e) =>
+                                                createForm.setData(
+                                                    "title",
+                                                    e.target.value,
+                                                )
+                                            }
+                                        />
+
+                                        <Input
+                                            placeholder="Lokasi Kejadian"
+                                            className="rounded-xl"
+                                            value={createForm.data.location}
+                                            onChange={(e) =>
+                                                createForm.setData(
+                                                    "location",
+                                                    e.target.value,
+                                                )
+                                            }
+                                        />
+
+                                        <Select
+                                            onValueChange={(value) =>
+                                                createForm.setData(
+                                                    "category_id",
+                                                    value,
+                                                )
+                                            }
+                                        >
+                                            <SelectTrigger className="rounded-xl">
+                                                <SelectValue placeholder="Pilih Kategori" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white">
+                                                {categories.map((category) => (
+                                                    <SelectItem
+                                                        key={category.id}
+                                                        value={String(
+                                                            category.id,
+                                                        )}
+                                                    >
+                                                        {category.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+
+                                        <Input
+                                            type="file"
+                                            accept="image/*"
+                                            className="rounded-xl cursor-pointer"
+                                            onChange={(e) =>
+                                                createForm.setData(
+                                                    "photo",
+                                                    e.target.files[0],
+                                                )
+                                            }
+                                        />
+
+                                        <Textarea
+                                            placeholder="Tulis aspirasi kamu di sini..."
+                                            className="rounded-xl min-h-[120px]"
+                                            value={createForm.data.description}
+                                            onChange={(e) =>
+                                                createForm.setData(
+                                                    "description",
+                                                    e.target.value,
+                                                )
+                                            }
+                                        />
+
+                                        <Button
+                                            onClick={submitAspirasi}
+                                            className="w-full rounded-xl shadow-sm hover:shadow-md transition-all"
+                                        >
+                                            Kirim Aspirasi
+                                        </Button>
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
+                        </>
                     )}
 
                     {/* filters: same as index */}
@@ -441,14 +507,24 @@ export default function Dashboard({ auth }) {
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl">
-                                        {CATEGORIES.map((c) => (
+                                        {/* include 'Semua' option first */}
+                                        <SelectItem
+                                            key="semua"
+                                            value="Semua"
+                                            className="text-sm flex items-center gap-1 bg-white"
+                                        >
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                                Semua
+                                            </span>
+                                        </SelectItem>
+                                        {categories.map((c) => (
                                             <SelectItem
-                                                key={c}
-                                                value={c}
+                                                key={c.code}
+                                                value={c.name}
                                                 className="text-sm flex items-center gap-1 bg-white"
                                             >
                                                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
-                                                    {c}
+                                                    {c.name}
                                                 </span>
                                             </SelectItem>
                                         ))}
@@ -459,7 +535,7 @@ export default function Dashboard({ auth }) {
                             {/* Active filters */}
                             {(search ||
                                 statusFilter !== "Semua Status" ||
-                                categoryFilter !== "Semua Kategori") && (
+                                categoryFilter !== "Semua") && (
                                 <div className="flex items-center gap-2 mt-3 flex-wrap">
                                     <span className="text-xs text-slate-400">
                                         {filtered.length} hasil ditemukan
@@ -468,7 +544,7 @@ export default function Dashboard({ auth }) {
                                         onClick={() => {
                                             setSearch("");
                                             setStatusFilter("Semua Status");
-                                            setCategoryFilter("Semua Kategori");
+                                            setCategoryFilter("Semua");
                                         }}
                                         className="text-xs text-indigo-500 hover:text-indigo-700 underline underline-offset-2 transition-colors"
                                     >
