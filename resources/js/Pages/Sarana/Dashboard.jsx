@@ -294,13 +294,15 @@ export default function Dashboard() {
         description: "",
         location: "",
         category_id: "",
-        photo: null,
+        image: null,
     });
 
     const submitAspirasi = (e) => {
         e.preventDefault();
         createForm.post(route("reports.store"), {
+            forceFormData: true,
             onSuccess: () => {
+                alert("berhasil membuat aspirasi");
                 setOpen(false);
                 createForm.reset();
             },
@@ -421,7 +423,7 @@ export default function Dashboard() {
                                             className="rounded-xl cursor-pointer"
                                             onChange={(e) =>
                                                 createForm.setData(
-                                                    "photo",
+                                                    "image",
                                                     e.target.files[0],
                                                 )
                                             }

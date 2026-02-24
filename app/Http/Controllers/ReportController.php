@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Report;
 use Auth;
 use Illuminate\Http\Request;
+use Str;
 
 class ReportController extends Controller
 {
@@ -31,16 +32,12 @@ class ReportController extends Controller
     {
         //
         $request->validate([
-            'category_id' => ['required', 'integer'],
+            'category_id' => ['required', 'integer', 'exists:categories,id'],
             'location' => ['required', 'string'],
             'description' => ['required', 'string'],
-            'photo' => ['nullable', 'image', 'mimes:jpg,png,jpeg,webp'],
+            'image' => ['nullable', 'image', 'mimes:jpg,png,jpeg,webp', 'max:2048'],
         ]);
 
-        if ($request->photo) {
-
-        }
-        
         $data = [
             'user_id' => Auth::id(),
             'category_id' => $request->category_id,
@@ -48,7 +45,16 @@ class ReportController extends Controller
             'description' => $request->description,
         ];
 
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $imageName = Str::uuid() . '.' . $request->file('image')->extension();
+            $request->file('image')->storeAs('images/reports', $imageName, 'public');
 
+            $data['image'] = $imageName;
+        }
+
+        Report::create($data);
+
+        return back()->with('success', 'berhasil membuat aspirasi');
     }
 
     /**
