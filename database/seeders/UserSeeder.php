@@ -3,10 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use DB;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
 class UserSeeder extends Seeder
@@ -25,6 +22,22 @@ class UserSeeder extends Seeder
             "password" => bcrypt("siswa1")
         ]);
 
-        $user->assignRole('siswa');
+        $user->assignRole('student');
+
+        $admin = User::firstOrCreate([
+            "name" => "admin 1",
+            "email" => "admin@gmail.com",
+            "password" => bcrypt("admin12345")
+        ]);
+
+        $admin->assignRole("admin");
+
+        $superadmin = User::firstOrCreate([
+            "name" => "super admin",
+            "email" => "superadmin@gmail.com",
+            "password" => bcrypt("superadmin12345")
+        ]);
+
+        $superadmin->assignRole("superadmin");
     }
 }
