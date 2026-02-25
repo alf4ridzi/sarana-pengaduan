@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Report;
+use App\Models\User;
+use Auth;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -14,11 +17,36 @@ class DashboardController extends Controller
     public function index()
     {
         //
+        $user = User::where('id', Auth::id())->first();
+
+        $aspirasi = collect();
+
+        // build base query for reports with relationships
+        $query = Report::with('user', 'category', 'replies');
+
+        if ($user->hasRole('admin') || $user->hasRole('superadmin')) {
+            // no additional constraints
+        } elseif ($user->hasRole('student')) {
+            $query->where('user_id', Auth::id());
+        }
+
+        // fetch and normalize the data so the frontend receives a simple structure
+        $aspirasi = $query->get()->map(function ($r) {
+            $arr = $r->toArray();
+            // convert category relationship to a simple string name
+            $arr['category'] = optional($r->category)->name;
+            // build a full URL for image so frontend can render it easily
+            if ($r->image) {
+                $arr['image_url'] = url('storage/images/reports/' . $r->image);
+            }
+            return $arr;
+        })->toArray();
 
         $categories = Category::all();
 
         $data = [
             'categories' => $categories,
+            'aspirasi' => $aspirasi,
         ];
 
         return Inertia::render("Sarana/Dashboard", $data);

@@ -10,6 +10,7 @@ class Report extends Model
     protected $fillable = [
         'user_id',
         'category_id',
+        'title',
         'location',
         'description',
         'image',
@@ -22,5 +23,9 @@ class Report extends Model
 
     public function user() {
         return $this->belongsTo(User::class);
+    }
+
+    public function replies() {
+        return $this->hasMany(ReportResponse::class);
     }
 }

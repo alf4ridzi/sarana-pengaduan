@@ -115,6 +115,14 @@ function DetailDialog({ item, role }) {
                         </span>
                     </div>
 
+                    {item.image_url && (
+                        <img
+                            src={item.image_url}
+                            alt="Foto aspirasi"
+                            className="w-48 h-auto rounded-lg"
+                        />
+                    )}
+
                     <p className="text-sm text-slate-600 leading-relaxed">
                         {item.description}
                     </p>
@@ -204,63 +212,63 @@ function DetailDialog({ item, role }) {
     );
 }
 
-const aspirasi = [
-    {
-        id: 1,
-        title: "Perbaikan Fasilitas WiFi Kampus",
-        description:
-            "Koneksi WiFi di gedung A sering terputus dan sangat lambat terutama saat jam sibuk.",
-        status: "open",
-        category: "Fasilitas",
-        replies: [],
-        user: { id: 2, name: "Ahmad Fauzi" },
-        created_at: "2026-02-20 09:12:00",
-    },
-    {
-        id: 2,
-        title: "Penambahan Tempat Parkir Motor",
-        description:
-            "Area parkir motor tidak mencukupi saat jam perkuliahan pagi, banyak motor parkir sembarangan.",
-        status: "process",
-        category: "Infrastruktur",
-        replies: [
-            {
-                id: 1,
-                message:
-                    "Terima kasih atas masukannya. Saat ini sedang dilakukan perencanaan perluasan area parkir.",
-                user: { id: 1, name: "Admin Kampus" },
-                created_at: "2026-02-21 10:00:00",
-            },
-        ],
-        user: { id: 3, name: "Siti Rahma" },
-        created_at: "2026-02-19 14:45:00",
-    },
-    {
-        id: 3,
-        title: "AC Ruang Kelas Tidak Berfungsi",
-        description:
-            "AC di ruang B203 sudah beberapa hari tidak dingin dan membuat suasana belajar tidak nyaman.",
-        status: "closed",
-        category: "Fasilitas",
-        replies: [
-            {
-                id: 2,
-                message:
-                    "Tim teknisi sudah memperbaiki AC pada tanggal 18 Februari. Silakan konfirmasi jika masih bermasalah.",
-                user: { id: 1, name: "Admin Kampus" },
-                created_at: "2026-02-18 16:30:00",
-            },
-        ],
-        user: { id: 4, name: "Budi Santoso" },
-        created_at: "2026-02-17 08:20:00",
-    },
-];
+// const aspirasi = [
+//     {
+//         id: 1,
+//         title: "Perbaikan Fasilitas WiFi Kampus",
+//         description:
+//             "Koneksi WiFi di gedung A sering terputus dan sangat lambat terutama saat jam sibuk.",
+//         status: "open",
+//         category: "Fasilitas",
+//         replies: [],
+//         user: { id: 2, name: "Ahmad Fauzi" },
+//         created_at: "2026-02-20 09:12:00",
+//     },
+//     {
+//         id: 2,
+//         title: "Penambahan Tempat Parkir Motor",
+//         description:
+//             "Area parkir motor tidak mencukupi saat jam perkuliahan pagi, banyak motor parkir sembarangan.",
+//         status: "process",
+//         category: "Infrastruktur",
+//         replies: [
+//             {
+//                 id: 1,
+//                 message:
+//                     "Terima kasih atas masukannya. Saat ini sedang dilakukan perencanaan perluasan area parkir.",
+//                 user: { id: 1, name: "Admin Kampus" },
+//                 created_at: "2026-02-21 10:00:00",
+//             },
+//         ],
+//         user: { id: 3, name: "Siti Rahma" },
+//         created_at: "2026-02-19 14:45:00",
+//     },
+//     {
+//         id: 3,
+//         title: "AC Ruang Kelas Tidak Berfungsi",
+//         description:
+//             "AC di ruang B203 sudah beberapa hari tidak dingin dan membuat suasana belajar tidak nyaman.",
+//         status: "closed",
+//         category: "Fasilitas",
+//         replies: [
+//             {
+//                 id: 2,
+//                 message:
+//                     "Tim teknisi sudah memperbaiki AC pada tanggal 18 Februari. Silakan konfirmasi jika masih bermasalah.",
+//                 user: { id: 1, name: "Admin Kampus" },
+//                 created_at: "2026-02-18 16:30:00",
+//             },
+//         ],
+//         user: { id: 4, name: "Budi Santoso" },
+//         created_at: "2026-02-17 08:20:00",
+//     },
+// ];
 
 export default function Dashboard() {
-    const { auth, categories } = usePage().props;
+    const { auth, categories, aspirasi } = usePage().props;
     const role = auth.user.roles[0]?.name || "student";
     const [open, setOpen] = useState(false);
-
+    console.log(aspirasi);
     // filters and search
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("Semua Status");

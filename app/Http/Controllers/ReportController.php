@@ -34,6 +34,7 @@ class ReportController extends Controller
         $request->validate([
             'category_id' => ['required', 'integer', 'exists:categories,id'],
             'location' => ['required', 'string'],
+            'title' => ['required', 'string'],
             'description' => ['required', 'string'],
             'image' => ['nullable', 'image', 'mimes:jpg,png,jpeg,webp', 'max:2048'],
         ]);
@@ -41,6 +42,7 @@ class ReportController extends Controller
         $data = [
             'user_id' => Auth::id(),
             'category_id' => $request->category_id,
+            'title' => $request->title,
             'location' => $request->location,
             'description' => $request->description,
         ];
@@ -87,5 +89,9 @@ class ReportController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function reply(Request $request, string $id) {
+        
     }
 }
